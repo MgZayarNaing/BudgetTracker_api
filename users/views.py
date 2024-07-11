@@ -10,6 +10,12 @@ from .serializers import (
 )
 from .pagination import CustomUserPagination
 from django.shortcuts import get_object_or_404
+from rest_framework_simplejwt.views import TokenObtainPairView
+from .serializers import CustomTokenObtainPairSerializer
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
+
 
 @api_view(['GET'])
 @renderer_classes([JSONRenderer])

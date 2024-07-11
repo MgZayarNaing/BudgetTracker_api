@@ -1,7 +1,7 @@
 from django.utils.timezone import localtime
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import CustomUser
-
 
 class CustomUserSerializer(serializers.ModelSerializer):
     created_at = serializers.SerializerMethodField()
@@ -46,4 +46,20 @@ class CustomUserRegisterSerializer(serializers.ModelSerializer):
         )
         return user
 
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
 
+        # Add custom claims
+        token['user_id'] = str(user.uuid)
+        token['username'] = user.username
+        # Add more custom fields if needed
+
+        return token
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        serializer = CustomUserSerializer(self.user)
+        data.update(serializer.data)
+        return data
